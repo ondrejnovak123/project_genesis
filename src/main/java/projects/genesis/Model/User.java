@@ -4,18 +4,36 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class User {
+    private int id;
     private String name;
     private String surname;
     private String personID;
     private UUID uuid;
 
+    public User() {
+        this.id       = 0;
+        this.name     = "";
+        this.surname  = "";
+        this.personID = "";
+        this.uuid = UUID.randomUUID();
+    }
+
     public User(String name, String surname, String personID) {
-        this.name = name;
+        this.id      = 0;
+        this.name    = name;
         this.surname = surname;
-        if (!Objects.equals(personID, "")) {
+        if (!Objects.equals(personID, "") && personID != null) {
             this.personID = personID;
         }
         this.uuid = UUID.randomUUID();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public UUID getUuid() {
