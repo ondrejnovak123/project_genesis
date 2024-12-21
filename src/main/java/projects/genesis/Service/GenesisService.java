@@ -15,11 +15,6 @@ import static projects.genesis.GenesisApplication.*;
 
 @Service
 public class GenesisService {
-    private ArrayList<User> users;
-
-    public GenesisService() {
-        this.users = new ArrayList<>();
-    }
 
     public String getPersID(){
         BufferedReader reader;
