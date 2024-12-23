@@ -89,17 +89,17 @@ public class GenesisService {
     public String convertUserToJson(User user, Boolean detail){
         if (detail) {
             return "{" + "\r\n" +
-                    "id: " + user.getId() + "\r\n" +
-                    "name:" + user.getName() + "\r\n" +
-                    "surname:" + user.getSurname() + "\r\n" +
-                    "personID:" + user.getPersonID() + "\r\n" +
-                    "uuid:" + user.getUuid() + "\r\n" +
+                    "id: " + user.getId() + ",\r\n" +
+                    "name: " + user.getName() + ",\r\n" +
+                    "surname: " + user.getSurname() + ",\r\n" +
+                    "personID: " + user.getPersonID() + ",\r\n" +
+                    "uuid: " + user.getUuid() + "\r\n" +
                     "}";
         } else {
             return "{" + "\r\n" +
-                    "id: " + user.getId() + "\r\n" +
-                    "name:" + user.getName() + "\r\n" +
-                    "surname:" + user.getSurname() + "\r\n" +
+                    "id: " + user.getId() + ",\r\n" +
+                    "name: " + user.getName() + ",\r\n" +
+                    "surname: " + user.getSurname() + ",\r\n" +
                     "}";
         }
     }
