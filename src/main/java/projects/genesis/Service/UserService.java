@@ -134,31 +134,6 @@ public class UserService {
         return users;
     }
 
-    public ArrayList<User> getUsersShort(){
-        ArrayList<User> users = new ArrayList<>();
-        String s = "";
-        try (
-                Connection con = DriverManager.getConnection(dbSourcePath, dbUsername, dbPassword);
-        ) {
-            Statement statement = con.createStatement();
-            statement.executeQuery("SELECT * FROM users");
-            ResultSet res = statement.getResultSet();
-            while (res.next()) {
-                User user = new User();
-                user.setId(res.getInt(1));
-                user.setName(res.getString("Name"));
-                user.setSurname(res.getString("Surname"));
-                user.setPersonID(res.getString("PersonID"));
-                user.setUuid(UUID.fromString(res.getString("Uuid")));
-                users.add(user);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return users;
-    }
-
     public boolean updateUserInDB(User newUser){
         try (
                 Connection con = DriverManager.getConnection(dbSourcePath, dbUsername, dbPassword);
