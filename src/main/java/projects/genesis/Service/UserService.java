@@ -14,7 +14,7 @@ import java.util.UUID;
 import static projects.genesis.GenesisApplication.*;
 
 @Service
-public class GenesisService {
+public class UserService {
 
     public String getPersID(){
         BufferedReader reader;
@@ -86,24 +86,6 @@ public class GenesisService {
         }
     }
 
-    public String convertUserToJson(User user, Boolean detail){
-        if (detail) {
-            return "{" + "\r\n" +
-                    "id: " + user.getId() + ",\r\n" +
-                    "name: " + user.getName() + ",\r\n" +
-                    "surname: " + user.getSurname() + ",\r\n" +
-                    "personID: " + user.getPersonID() + ",\r\n" +
-                    "uuid: " + user.getUuid() + "\r\n" +
-                    "}";
-        } else {
-            return "{" + "\r\n" +
-                    "id: " + user.getId() + ",\r\n" +
-                    "name: " + user.getName() + ",\r\n" +
-                    "surname: " + user.getSurname() + ",\r\n" +
-                    "}";
-        }
-    }
-
     public User getUserFromDB(int ID){
         try (
                 Connection con = DriverManager.getConnection(dbSourcePath, dbUsername, dbPassword);
@@ -114,9 +96,9 @@ public class GenesisService {
             if (res.next()) {
                 User user = new User();
                 user.setId(res.getInt(1));
-                user.setPersonID(res.getString("PersonID"));
                 user.setName(res.getString("Name"));
                 user.setSurname(res.getString("Surname"));
+                user.setPersonID(res.getString("PersonID"));
                 user.setUuid(UUID.fromString(res.getString("Uuid")));
                 return user;
             }
@@ -127,18 +109,7 @@ public class GenesisService {
         return null;
     }
 
-    public String getUser(int ID, boolean detail){
-        User user = getUserFromDB(ID);
-        if (user == null){
-          return "User not found.";
-        } else {
-           return convertUserToJson(user, detail);
-        }
-
-
-    }
-
-    public String getUsers(boolean detail){
+    public ArrayList<User> getUsers(){
         ArrayList<User> users = new ArrayList<>();
         String s = "";
         try (
@@ -150,26 +121,42 @@ public class GenesisService {
             while (res.next()) {
                 User user = new User();
                 user.setId(res.getInt(1));
-                user.setPersonID(res.getString("PersonID"));
                 user.setName(res.getString("Name"));
                 user.setSurname(res.getString("Surname"));
+                user.setPersonID(res.getString("PersonID"));
                 user.setUuid(UUID.fromString(res.getString("Uuid")));
                 users.add(user);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        s = "List<";
-        boolean first = true;
-        for (User user: users) {
-            if (!first) {
-                s = s.concat(",");
+
+        return users;
+    }
+
+    public ArrayList<User> getUsersShort(){
+        ArrayList<User> users = new ArrayList<>();
+        String s = "";
+        try (
+                Connection con = DriverManager.getConnection(dbSourcePath, dbUsername, dbPassword);
+        ) {
+            Statement statement = con.createStatement();
+            statement.executeQuery("SELECT * FROM users");
+            ResultSet res = statement.getResultSet();
+            while (res.next()) {
+                User user = new User();
+                user.setId(res.getInt(1));
+                user.setName(res.getString("Name"));
+                user.setSurname(res.getString("Surname"));
+                user.setPersonID(res.getString("PersonID"));
+                user.setUuid(UUID.fromString(res.getString("Uuid")));
+                users.add(user);
             }
-            s = s.concat(convertUserToJson(user,detail));
-            first = false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        s = s.concat(">");
-        return s;
+
+        return users;
     }
 
     public boolean updateUserInDB(User newUser){
@@ -216,5 +203,32 @@ public class GenesisService {
         } else {
             return "Failed.";
         }
+    }
+
+    public static class UserShort {
+        private int id;
+
+        private String name;
+        private String surname;
+
+        public UserShort(int id, String name, String surname) {
+            this.id = id;
+            this.name = name;
+            this.surname = surname;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getSurname() {
+            return surname;
+        }
+
+
     }
 }
