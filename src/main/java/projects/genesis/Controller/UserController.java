@@ -69,7 +69,14 @@ public class UserController {
     }
 
     @DeleteMapping("users/{id}")
-    public String getUser( @PathVariable("id") Integer id){
-        return genService.deleteUser(id);
+    public ResponseEntity<Object> getUser( @PathVariable("id") Integer id){
+        if (genService.deleteUser(id)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("User deleted.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("User failed to delete.");
+        }
+
     }
 }

@@ -156,18 +156,17 @@ public class UserService {
         ) {
             Statement statement = con.createStatement();
 
-            statement.execute("DELETE FROM users WHERE ID = " + ID + ";");
-            return true;
+            int rowsAffected = statement.executeUpdate("DELETE FROM users WHERE ID = " + ID + ";");
+            return rowsAffected > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public String deleteUser(int ID){
+    public boolean deleteUser(int ID){
         if (ID != 0){
-            if (deleteUserFromDB(ID)) { return "Success.";}
-            else { return "Failed.";}
+           return deleteUserFromDB(ID);
         } else {
-            return "Failed.";
+            return false;
         }
     }
 
