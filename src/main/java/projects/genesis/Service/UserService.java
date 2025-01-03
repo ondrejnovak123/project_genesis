@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.UUID;
 
 import static projects.genesis.GenesisApplication.*;
@@ -16,15 +15,15 @@ import static projects.genesis.GenesisApplication.*;
 @Service
 public class UserService {
 
-    public String getPersID(){
+    public boolean checkPersIDInList(String persID){
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader(dataPersonIdFilePath));
             String line = reader.readLine();
 
             while (line != null) {
-                if (checkForPersonIDAvailability(line)) {
-                    return line;
+                if (line.equals(persID)) {
+                    return true;
                 }
                 line = reader.readLine();
             }
@@ -33,7 +32,7 @@ public class UserService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "";
+        return false;
     }
 
     public Boolean checkForPersonIDAvailability(String personID) {
@@ -67,23 +66,16 @@ public class UserService {
         }
     }
 
-    public String newUser(User user) {
+    public boolean newUser(User user) {
         String persID = user.getPersonID();
 
-        if (Objects.equals(persID,"") || persID == null) {
-            persID = getPersID();
-            user.setPersonID(persID);
-        } else {
-            if (!checkForPersonIDAvailability(persID)){
-                persID = getPersID();
-                user.setPersonID(persID);
-            }
+        if (!checkPersIDInList(persID)) {
+            return false;
         }
-        if (sendUserToDB(user)) {
-            return "Success.";
-        } else {
-            return  "Failed.";
+        if (checkForPersonIDAvailability(persID)) {
+            return sendUserToDB(user);
         }
+        return false;
     }
 
     public User getUserFromDB(int ID){
@@ -140,22 +132,21 @@ public class UserService {
         ) {
             Statement statement = con.createStatement();
 
-            statement.execute("UPDATE users set Name = '" + newUser.getName()+ "', " +
+            int rowsAffected = statement.executeUpdate("UPDATE users set Name = '" + newUser.getName()+ "', " +
                                                     "Surname = '" + newUser.getSurname() + "', " +
-                                                    "PersonID = '" + newUser.getPersonID() + "', "+
                                                     "Uuid = '"+ newUser.getUuid() + "' where ID = " + newUser.getId() + ";");
-            return true;
+
+            return rowsAffected > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String updateUser(User newUser){
+    public boolean updateUser(User newUser){
         if (newUser.getId() != 0){
-           if (updateUserInDB(newUser)) { return "Success.";}
-           else { return "Failed.";}
+            return updateUserInDB(newUser);
         } else {
-            return "Failed.";
+            return false;
         }
     }
 

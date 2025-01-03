@@ -1,5 +1,7 @@
 package projects.genesis.Controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projects.genesis.Model.User;
 import projects.genesis.Service.UserService;
@@ -14,8 +16,14 @@ public class UserController {
     UserService genService = new UserService();
 
     @PostMapping("users")
-    public String addUser(@RequestBody User user){
-        return genService.newUser(user);
+    public ResponseEntity<Object> addUser(@RequestBody User user){
+        if (genService.newUser(user)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("User created.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("User failed to create.");
+        }
     }
 
     @GetMapping("users")
@@ -47,10 +55,17 @@ public class UserController {
     }
 
     @PutMapping("users")
-    public String updateCrypto(
+    public ResponseEntity<Object> updateUser(
             @RequestBody User user
     ){
-        return genService.updateUser(user);
+        if (genService.updateUser(user)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("User updated.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("User failed to update.");
+        }
+
     }
 
     @DeleteMapping("users/{id}")
